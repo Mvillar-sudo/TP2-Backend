@@ -50,3 +50,32 @@ def actualizar_resultado(id, goles_local, goles_visitante):
     conn.close()
 
     return filas_afectadas
+
+
+def obtener_partido(id): 
+    conn = mysql.connector.connect(**db_config)
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("SELECT * FROM partidos WHERE ID = %s", (id,)) 
+
+    resultado = cursor.fetchone() 
+
+    cursor.close()
+    conn.close()
+
+    return resultado 
+
+def borrar_partido(id): 
+    conn = mysql.connector.connect(**db_config)
+    cursor = conn.cursor(dictionary=True) 
+
+    cursor.execute("DELETE FROM partidos WHERE ID = %s", (id,))
+
+    conn.commit()
+
+    filas_afectadas = cursor.rowcount
+
+    cursor.close()
+    conn.close()
+
+    return filas_afectadas
