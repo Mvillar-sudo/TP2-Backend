@@ -7,11 +7,11 @@ db_config = {
     'database': "mundial_fixture"
 }
 
-def obtener_partidos():
+def obtener_partidos_paginados(limit, offset):
     conn = mysql.connector.connect(**db_config)
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT * FROM partidos")
+    cursor.execute("SELECT * FROM partidos ORDER BY fecha LIMIT %s OFFSET %s", (limit, offset))
 
     resultados = cursor.fetchall()
 
