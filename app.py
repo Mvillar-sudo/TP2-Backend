@@ -3,7 +3,7 @@ import db
 
 app = Flask(__name__)
 
-@app.route("/partidos")
+@app.route("/partidos", methods=['GET'])
 def obtener_partidos():
     resultados = db.obtener_partidos()
     return jsonify(resultados)
@@ -57,4 +57,21 @@ def actualizar_resultado(id):
     if filas == 0:
         return jsonify({"errors": [{"code": "404", "message": f"No existe partido con ID {id}", "level": "error"}]}), 404
 
+    return '', 204 
+
+@app.route("/partidos/<int:id>", methods=['GET']) 
+def obtener_partido(id): 
+    resultado = db.obtener_partido(id) 
+
+    if not resultado: 
+        return jsonify({"errors": [{"code": "404", "message": f"No existe partido con ID {id}", "level": "error"}]}), 404
+    
+    return jsonify(resultado), 200
+
+@app.route("/partidos/<int:id>", methods=['DELETE'])
+def borrar_partido(id): 
+    fila = db.borrar_partido(id) 
+
+    if fila == 0: 
+        return jsonify({"errors": [{"code": "404", "message": f"No existe partido con ID {id}", "level": "error"}]}), 404
     return '', 204
