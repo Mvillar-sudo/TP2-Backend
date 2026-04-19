@@ -77,3 +77,17 @@ def borrar_partido(id):
     if fila == 0: 
         return jsonify({"errors": [{"code": "404", "message": f"No existe partido con ID {id}", "level": "error"}]}), 404
     return '', 204
+
+@app.route('/partidos/<int:id>/prediccion', methods=['POST'])
+def agregar_prediccion(id):
+    data = request.get_json()
+    
+    usuario_id = data.get('id_usuario')
+    goles_local = data.get('local')
+    goles_visitante = data.get('visitante')
+    
+    if usuario_id is None or goles_local is None or goles_visitante is None:
+        return jsonify({'error': 'Faltan datos'}), 400
+    
+    result = db.agregar_prediccion(id, usuario_id, goles_local, goles_visitante)
+    return jsonify(result), result.get('code', 201)
