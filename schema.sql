@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS predicciones (
     id_partido INT NOT NULL,
     local INT NOT NULL,
     visitante INT NOT NULL,
+    UNIQUE (id_usuario, id_partido),
     PRIMARY KEY (id_usuario, id_partido),
     FOREIGN KEY (id_usuario) REFERENCES usuarios(ID)
         ON DELETE CASCADE ON UPDATE CASCADE,
