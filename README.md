@@ -1,6 +1,6 @@
 # TP2-Backend
 # Proyecto Backend: Fixture y ProDe Mundial 2026 
-### Introducción al Desarrollo de Software (TB022) - Curso Lanzillota (FIUBA)
+### Introducción al Desarrollo de Software  - Curso Lanzillota 
 
 Este repositorio contiene la API REST desarrollada para la gestión del fixture del Mundial 2026 y el sistema de pronósticos deportivos (ProDe) solicitado en el **Enunciado Sorpresa**.
 
@@ -16,6 +16,11 @@ Este repositorio contiene la API REST desarrollada para la gestión del fixture 
 * **Framework:** Flask
 * **Base de Datos:** MySQL
 * **ORM:** Flask-SQLAlchemy
+* 
+## Endpoints Principales
+* **POST /partidos:** Crea partidos.
+*  **GET /partidos:** Lista partidos.
+* **PUT /partidos/{id}/resultado:** Actualiza resultados.
 
 ##  Dependencias
 Es necesario instalar el microframework Flask y el conector para MySQL:
