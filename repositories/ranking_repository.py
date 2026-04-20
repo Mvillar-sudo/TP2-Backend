@@ -2,7 +2,7 @@ from database import get_db_connection
 
 def get_ranking_from_db(limit=10, offset=0):
     """
-    Consulta a SQLite/MySQL para obtener el ranking ordenado.
+    Consulta a MySQL para obtener el ranking ordenado.
     """
     conn = get_db_connection()
     if not conn:
