@@ -1,7 +1,6 @@
-DROP TABLE partidos;
-DROP TABLE usuarios;
-DROP TABLE predicciones;
-
+DROP TABLE IF EXISTS predicciones;
+DROP TABLE IF EXISTS usuarios;
+DROP TABLE IF EXISTS partidos;
 
 CREATE DATABASE IF NOT EXISTS mundial_fixture;
 USE mundial_fixture;
@@ -28,8 +27,8 @@ CREATE TABLE IF NOT EXISTS predicciones (
     local INT NOT NULL,
     visitante INT NOT NULL,
     PRIMARY KEY (id_usuario, id_partido),
-    FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(ID)
         ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (id_partido) REFERENCES partidos(id)
+    FOREIGN KEY (id_partido) REFERENCES partidos(ID)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
