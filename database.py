@@ -12,7 +12,7 @@ def get_db_connection():
             host=os.getenv("DB_HOST", "localhost"),
             database=os.getenv("DB_NAME", "mundial_db"),
             user=os.getenv("DB_USER", "root"),
-            password=os.getenv("DB_PASSWORD", "")
+            password=os.getenv("DB_PASSWORD", "eYFD050915_")
         )
         if connection.is_connected():
             return connection
