@@ -7,14 +7,33 @@ db_config = {
     'database': "mundial_fixture"
 }
 
-def obtener_partidos_paginados(limit, offset):
+def obtener_partidos_paginados(limit, offset, filtros=None):
     conn = mysql.connector.connect(**db_config)
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(dictionary=True) 
 
-    cursor.execute("SELECT COUNT(*) as total FROM partidos")
+    columnas_validas = ['Fecha', 'Fase'] 
+    condiciones = []
+    valores_sql = []
+
+    if filtros:
+        # Filtro por Equipo (Local O Visitante)
+        if 'equipo' in filtros and filtros['equipo']:
+            nombre_equipo = filtros['equipo']
+            condiciones.append("(Equipo_local = %s OR Equipo_visitante = %s)")
+            valores_sql.extend([nombre_equipo, nombre_equipo])
+
+        for columna, valor in filtros.items():
+            if columna in columnas_validas and valor:
+                condiciones.append(f"{columna} = %s")
+                valores_sql.append(valor)
+
+    where_condicion = f" WHERE {' AND '.join(condiciones)}" if condiciones else ""
+
+    cursor.execute(f"SELECT COUNT(*) as total FROM partidos{where_condicion}", valores_sql)
     conteo_total  = cursor.fetchone()['total']
     
-    cursor.execute("SELECT * FROM partidos ORDER BY Fecha LIMIT %s OFFSET %s", (limit, offset))
+    sql_final = f"SELECT * FROM partidos{where_condicion} ORDER BY Fecha LIMIT %s OFFSET %s"
+    cursor.execute(sql_final, valores_sql + [limit, offset])
 
     resultados = cursor.fetchall()
 
