@@ -21,6 +21,7 @@ Este repositorio contiene la API REST desarrollada para la gestión del fixture 
 * **POST /partidos:** Crea partidos.
 *  **GET /partidos:** Lista partidos.
 * **PUT /partidos/{id}/resultado:** Actualiza resultados.
+* **DELETE /elimina partido:** Elimina un partido.
 
 ##  Dependencias
 Es necesario instalar el microframework Flask y el conector para MySQL:
