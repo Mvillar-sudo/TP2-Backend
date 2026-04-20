@@ -1,14 +1,36 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, url_for
 import db 
 
 app = Flask(__name__)
 
-@app.route("/partidos")
+@app.route("/partidos",methods=['GET'])
 def obtener_partidos():
     limit = request.args.get("limit", default=10, type=int)
     offset = request.args.get("offset", default=0, type=int)
-    resultados = db.obtener_partidos_paginados(limit, offset)
-    return jsonify(resultados)
+    resultados, conteo_total = db.obtener_partidos_paginados(limit, offset)
+    
+    links = {
+        "_self": url_for("obtener_partidos", limit=limit, offset=offset, _external=True),
+        "_first": url_for("obtener_partidos", limit=limit, offset=0, _external=True),
+    }
+
+    if offset + limit < conteo_total:
+        links['_next'] = url_for("obtener_partidos", limit=limit, offset=offset + limit, _external=True)
+
+    if offset > 0: 
+        offset_previo = max(0, offset - limit)
+        links['_prev'] = url_for("obtener_partidos", limit=limit, offset=offset_previo, _external=True)
+
+    ultimo_offset = (conteo_total // limit) * limit
+    if ultimo_offset == conteo_total and conteo_total > 0: 
+        ultimo_offset -= limit 
+    links['_last'] = url_for("obtener_partidos", limit=limit, offset=ultimo_offset, _external=True)
+
+    return jsonify({
+        "data": resultados,
+        "total": conteo_total, 
+        "links": links
+    })
 
 
 
