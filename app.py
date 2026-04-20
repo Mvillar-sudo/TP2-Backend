@@ -7,24 +7,31 @@ app = Flask(__name__)
 def obtener_partidos():
     limit = request.args.get("limit", default=10, type=int)
     offset = request.args.get("offset", default=0, type=int)
-    resultados, conteo_total = db.obtener_partidos_paginados(limit, offset)
+    
+    #Lee el URL para encontrar si se pasaron filtros y los convierte en un diccionario: Ej. /partidos?equipo=Brasil&Fase=Grupos
+    filtros = {k: v for k, v in request.args.items() if k not in ['limit', 'offset']} 
+
+    resultados, conteo_total = db.obtener_partidos_paginados(limit, offset, filtros) 
+
+    def generar_url_con_filtros(nuevo_offset):
+        # Une limit y el nuevo offset con los filtros actuales
+        params = {**filtros, "limit": limit, "offset": nuevo_offset, "_external": True}
+        return url_for("obtener_partidos", **params)
     
     links = {
-        "_self": url_for("obtener_partidos", limit=limit, offset=offset, _external=True),
-        "_first": url_for("obtener_partidos", limit=limit, offset=0, _external=True),
+        "_self": generar_url_con_filtros(offset),
+        "_first": generar_url_con_filtros(0),
     }
 
     if offset + limit < conteo_total:
-        links['_next'] = url_for("obtener_partidos", limit=limit, offset=offset + limit, _external=True)
+        links['_next'] = generar_url_con_filtros(offset+limit)
 
     if offset > 0: 
         offset_previo = max(0, offset - limit)
-        links['_prev'] = url_for("obtener_partidos", limit=limit, offset=offset_previo, _external=True)
+        links['_prev'] = generar_url_con_filtros(offset_previo)
 
-    ultimo_offset = (conteo_total // limit) * limit
-    if ultimo_offset == conteo_total and conteo_total > 0: 
-        ultimo_offset -= limit 
-    links['_last'] = url_for("obtener_partidos", limit=limit, offset=ultimo_offset, _external=True)
+    ultimo_offset = (max(0, conteo_total - 1) // limit) * limit
+    links['_last'] = generar_url_con_filtros(ultimo_offset)
 
     return jsonify({
         "data": resultados,
