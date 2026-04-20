@@ -25,10 +25,26 @@ Este repositorio contiene la API REST desarrollada para la gestión del fixture 
 
 ## Endpoints Principales
 
-- **POST /partidos:** Crea partidos.
-- **GET /partidos:** Lista partidos.
-- **PUT /partidos/{id}/resultado:** Actualiza resultados.
-- **DELETE /elimina partido:** Elimina un partido.
+### Partidos y Predicciones
+
+- **GET /partidos:** Lista partidos
+- **POST /partidos:** Crea partidos
+- **GET /partidos/{id}:** Obtiene el detalle de un partido específico
+- **PUT /partidos/{id}/resultado:** Actualiza el resultado de un partido
+- **DELETE /partidos/{id}:** Elimina un partido de la base de datos
+- **POST /partidos/{id}/prediccion:** Registra la predicción de un usuario para un partido
+
+### Usuarios
+
+- **GET /usuarios:** Lista todos los usuarios registrados.
+- **POST /usuarios:** Crea un nuevo usuario.
+- **GET /usuarios/{id}:** Obtiene el detalle de un usuario específico.
+- **PUT /usuarios/{id}:** Actualiza los datos de un usuario.
+- **DELETE /usuarios/{id}:** Elimina un usuario del sistema.
+
+### Ranking (ProDe)
+
+- **GET /ranking:** Obtiene la tabla de posiciones calculando los puntos de los usuarios según los resultados.
 
 ## Dependencias
 
