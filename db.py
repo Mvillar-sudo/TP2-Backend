@@ -14,7 +14,7 @@ def obtener_partidos_paginados(limit, offset):
     cursor.execute("SELECT COUNT(*) as total FROM partidos")
     conteo_total  = cursor.fetchone()['total']
     
-    cursor.execute("SELECT * FROM partidos ORDER BY fecha LIMIT %s OFFSET %s", (limit, offset))
+    cursor.execute("SELECT * FROM partidos ORDER BY Fecha LIMIT %s OFFSET %s", (limit, offset))
 
     resultados = cursor.fetchall()
 
@@ -43,8 +43,8 @@ def actualizar_resultado(id, goles_local, goles_visitante):
 
     cursor.execute("""
         UPDATE partidos
-        SET goles_local = %s, goles_visitante = %s
-        WHERE id = %s
+        SET Goles_local = %s, Goles_visitante = %s
+        WHERE ID = %s
     """, (goles_local, goles_visitante, id))
 
     filas_afectadas = cursor.rowcount  # 0 si el ID no existe
@@ -59,7 +59,7 @@ def obtener_partido(id):
     conn = mysql.connector.connect(**db_config)
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT * FROM partidos WHERE id = %s", (id,)) 
+    cursor.execute("SELECT * FROM partidos WHERE ID = %s", (id,)) 
 
     resultado = cursor.fetchone() 
 
@@ -72,7 +72,7 @@ def borrar_partido(id):
     conn = mysql.connector.connect(**db_config)
     cursor = conn.cursor() 
 
-    cursor.execute("DELETE FROM partidos WHERE id = %s", (id,))
+    cursor.execute("DELETE FROM partidos WHERE ID = %s", (id,))
 
     conn.commit()
 
@@ -89,7 +89,7 @@ def agregar_prediccion(id, usuario_id, goles_local, goles_visitante):
         
         # Verificar que el partido exista
         cursor.execute(
-            "SELECT goles_local, goles_visitante FROM partidos WHERE id = %s",
+            "SELECT Goles_local, Goles_visitante FROM partidos WHERE ID = %s",
             (id,)
         )
         partido = cursor.fetchone()
