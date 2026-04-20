@@ -137,3 +137,98 @@ def agregar_prediccion(id, usuario_id, goles_local, goles_visitante):
         if err.errno == 1062:
             return {'error': 'Ya hiciste una predicción para este partido', 'code': 409}
         return {'error': str(err), 'code': 500}
+
+
+def crear_usuario(nombre, email):
+    try:
+        conn   = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+
+        cursor.execute(
+            "INSERT INTO usuarios (Nombre, Email) VALUES (%s, %s)",
+            (nombre, email)
+        )
+        conn.commit()
+        nuevo_id = cursor.lastrowid
+
+        cursor.close()
+        conn.close()
+
+        return {"id": nuevo_id, "code": 201}
+
+    except mysql.connector.Error as err:
+        if err.errno == 1062:          # Email duplicado (UNIQUE)
+            return {"error": "El email ya está registrado", "code": 409}
+        return {"error": str(err), "code": 500}
+
+
+def listar_usuarios(limit, offset):
+    conn   = mysql.connector.connect(**db_config)
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("SELECT COUNT(*) as total FROM usuarios")
+    conteo_total = cursor.fetchone()["total"]
+
+    cursor.execute(
+        "SELECT * FROM usuarios LIMIT %s OFFSET %s",
+        (limit, offset)
+    )
+    resultados = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return resultados, conteo_total
+
+
+def obtener_usuario(id):
+    conn   = mysql.connector.connect(**db_config)
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("SELECT * FROM usuarios WHERE ID = %s", (id,))
+    resultado = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    return resultado
+
+
+def actualizar_usuario(id, nombre, email):
+    try:
+        conn   = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+
+        cursor.execute(
+            "UPDATE usuarios SET Nombre = %s, Email = %s WHERE ID = %s",
+            (nombre, email, id)
+        )
+        filas = cursor.rowcount
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        if filas == 0:
+            return {"code": 404}
+
+        return {"code": 204}
+
+    except mysql.connector.Error as err:
+        if err.errno == 1062:
+            return {"error": "El email ya está en uso por otro usuario", "code": 409}
+        return {"error": str(err), "code": 500}
+
+
+def borrar_usuario(id):
+    conn   = mysql.connector.connect(**db_config)
+    cursor = conn.cursor()
+
+    cursor.execute("DELETE FROM usuarios WHERE ID = %s", (id,))
+    conn.commit()
+    filas = cursor.rowcount
+
+    cursor.close()
+    conn.close()
+
+    return filas

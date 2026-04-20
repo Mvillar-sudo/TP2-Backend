@@ -120,3 +120,93 @@ def agregar_prediccion(id):
     
     result = db.agregar_prediccion(id, usuario_id, goles_local, goles_visitante)
     return jsonify(result), result.get('code', 201)
+
+@app.route("/usuarios", methods=["POST"])
+def crear_usuario():
+    datos = request.get_json()
+
+    if not datos:
+        return jsonify({"error": "No se enviaron datos"}), 400
+
+    nombre = datos.get("nombre")
+    email  = datos.get("email")
+
+    if not nombre or not email:
+        return jsonify({"error": "Se requieren nombre y email"}), 400
+
+    resultado = db.crear_usuario(nombre, email)
+
+    if resultado.get("code") == 409:
+        return jsonify({"error": resultado["error"]}), 409
+
+    return jsonify({"mensaje": "Usuario creado correctamente", "id": resultado["id"]}), 201
+
+
+@app.route("/usuarios", methods=["GET"])
+def listar_usuarios():
+    limit  = request.args.get("limit",  default=10, type=int)
+    offset = request.args.get("offset", default=0,  type=int)
+
+    resultados, conteo_total = db.listar_usuarios(limit, offset)
+
+    links = {
+        "_self":  url_for("listar_usuarios", limit=limit, offset=offset,            _external=True),
+        "_first": url_for("listar_usuarios", limit=limit, offset=0,                 _external=True),
+    }
+
+    if offset + limit < conteo_total:
+        links["_next"] = url_for("listar_usuarios", limit=limit, offset=offset + limit, _external=True)
+
+    if offset > 0:
+        links["_prev"] = url_for("listar_usuarios", limit=limit, offset=max(0, offset - limit), _external=True)
+
+    ultimo_offset = (conteo_total // limit) * limit
+    if ultimo_offset == conteo_total and conteo_total > 0:
+        ultimo_offset -= limit
+    links["_last"] = url_for("listar_usuarios", limit=limit, offset=ultimo_offset, _external=True)
+
+    return jsonify({"data": resultados, "total": conteo_total, "links": links})
+
+
+@app.route("/usuarios/<int:id>", methods=["GET"])
+def obtener_usuario(id):
+    resultado = db.obtener_usuario(id)
+
+    if not resultado:
+        return jsonify({"errors": [{"code": "404", "message": f"No existe usuario con ID {id}", "level": "error"}]}), 404
+
+    return jsonify(resultado), 200
+
+
+@app.route("/usuarios/<int:id>", methods=["PUT"])
+def actualizar_usuario(id):
+    datos = request.get_json()
+
+    if not datos:
+        return jsonify({"errors": [{"code": "400", "message": "No se enviaron datos", "level": "error"}]}), 400
+
+    nombre = datos.get("nombre")
+    email  = datos.get("email")
+
+    if not nombre or not email:
+        return jsonify({"errors": [{"code": "400", "message": "Se requieren nombre y email", "level": "error"}]}), 400
+
+    resultado = db.actualizar_usuario(id, nombre, email)
+
+    if resultado.get("code") == 404:
+        return jsonify({"errors": [{"code": "404", "message": f"No existe usuario con ID {id}", "level": "error"}]}), 404
+
+    if resultado.get("code") == 409:
+        return jsonify({"errors": [{"code": "409", "message": resultado["error"], "level": "error"}]}), 409
+
+    return "", 204
+
+
+@app.route("/usuarios/<int:id>", methods=["DELETE"])
+def borrar_usuario(id):
+    filas = db.borrar_usuario(id)
+
+    if filas == 0:
+        return jsonify({"errors": [{"code": "404", "message": f"No existe usuario con ID {id}", "level": "error"}]}), 404
+
+    return "", 204
