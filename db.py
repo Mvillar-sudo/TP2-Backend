@@ -1,6 +1,6 @@
 import mysql.connector
-
 db_config = {
+
     'host': "localhost",
     'user': "root",
     'password': "1234",
@@ -122,7 +122,7 @@ def agregar_prediccion(id, usuario_id, goles_local, goles_visitante):
         
         # Insertar predicción
         cursor.execute("""
-            INSERT INTO predicciones (usuario_id, partido_id, goles_local, goles_visitante)
+            INSERT INTO predicciones (id_usuario, id_partido, local, visitante)
             VALUES (%s, %s, %s, %s)
         """, (usuario_id, id, goles_local, goles_visitante))
         
