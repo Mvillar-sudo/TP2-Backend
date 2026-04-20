@@ -3,7 +3,6 @@ from database import get_db_connection
 def get_ranking_from_db(limit=10, offset=0):
     """
     Consulta a SQLite/MySQL para obtener el ranking ordenado.
-    Calcula dinámicamente los puntos base de las predicciones vs. resultados.
     """
     conn = get_db_connection()
     if not conn:
