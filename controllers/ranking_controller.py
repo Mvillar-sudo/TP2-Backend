@@ -23,7 +23,7 @@ def get_ranking():
         }), 400
 
     if limit < 1 or offset < 0:
-        # Validación lógica de negocio: no se pueden pedir páginas de 0 elementos o empezar en un índice negativo
+        # No se pueden pedir páginas de 0 elementos o empezar en un índice negativo
         return jsonify({
             "errors": [{
                 "code": "BAD_PARAMS",
@@ -49,11 +49,7 @@ def get_ranking():
             }]
         }), 500
 
-    # ==============================================================
-    # Generación de la paginación HATEOAS (Hypermedia)
-    # ==============================================================
-    # Esto le permite al Frontend saber exactamente qué URLs usar
-    # para crear sus botones de "Siguiente", "Anterior", etc.
+    # Generación de la paginación HATEOAS
     base_url = request.base_url
 
     next_offset = offset + limit
