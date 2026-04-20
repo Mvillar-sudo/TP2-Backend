@@ -7,18 +7,21 @@ db_config = {
     'database': "mundial_fixture"
 }
 
-def obtener_partidos():
+def obtener_partidos_paginados(limit, offset):
     conn = mysql.connector.connect(**db_config)
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT * FROM partidos")
+    cursor.execute("SELECT COUNT(*) as total FROM partidos")
+    conteo_total  = cursor.fetchone()['total']
+    
+    cursor.execute("SELECT * FROM partidos ORDER BY fecha LIMIT %s OFFSET %s", (limit, offset))
 
     resultados = cursor.fetchall()
 
     cursor.close()
     conn.close()
 
-    return resultados
+    return resultados, conteo_total
 
 
 def registrar_encuentro(Equipo_local, Equipo_visitante, Fecha, Fase):
@@ -67,7 +70,7 @@ def obtener_partido(id):
 
 def borrar_partido(id): 
     conn = mysql.connector.connect(**db_config)
-    cursor = conn.cursor(dictionary=True) 
+    cursor = conn.cursor() 
 
     cursor.execute("DELETE FROM partidos WHERE id = %s", (id,))
 
